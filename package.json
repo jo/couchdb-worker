@@ -6,7 +6,7 @@
     "url": "http://github.com/jo",
     "email": "schmidt@netzmerk.com"
   },
-  "version": "0.1.0",
+  "version": "0.1.1",
   "dependencies": {
     "request": "*",
     "node.extend": ">=1.0.0"
