@@ -11,20 +11,28 @@ A worker module that manages state.
 
 ## Create a new Worker
 
-Define an object with two functions: _check_ and _process_:
+Basically you define an object with two functions: _check_ and _process_:
 
-    var processor = {
-      check: function(doc) {
-        return true
-      },
-      process: function(doc, done) {
-        // do something with the doc
-        var output = {
-          foo: 'bar'
-        };
-        done(null, output);
+    var Worker = require("couchdb-worker");
+
+    new Worker({
+      name: 'foo',
+      server: "http://127.0.0.1:5984",
+      processor: {
+        check: function(doc) {
+          return true
+        },
+        process: function(doc, done) {
+          // do something with the doc
+          setTimeout(function() {
+            done(null, {
+              foo: 'bar'
+            });
+          }, 200);
+        }
       }
-    }
+    }, 'mydb');
+
 
 The _check_ function is called to decide whether this doc should be processed generally.
 For example you might only be interested in docs of a certain field.
@@ -40,6 +48,31 @@ so that the doc variable could differ from the doc when it gets saved.
 The processor above inserts the property _foo_ with the value _bar_ into every document.
 
 Also take a look at examples/.
+
+
+## Create a new Worker for all databases
+
+Use a _Worker.pool_ if you want to spawn workers for each database:
+
+    var Worker = require("couchdb-worker");
+
+    new Worker.pool({
+      name: 'foo',
+      server: "http://127.0.0.1:5984",
+      processor: {
+        check: function(doc) {
+          return true
+        },
+        process: function(doc, done) {
+          // do something with the doc
+          setTimeout(function() {
+            done(null, {
+              foo: 'bar'
+            });
+          }, 200);
+        }
+      }
+    });
 
 
 ## Per Database Configuration

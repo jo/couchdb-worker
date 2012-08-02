@@ -9,7 +9,7 @@
 
 var Worker = require("couchdb-worker");
 
-new Worker({
+new Worker.pool({
   name: 'foo',
   server: process.env.HOODIE_SERVER || "http://127.0.0.1:5984",
   processor: {
