@@ -108,7 +108,7 @@ or pass them to the commandline:
 
 Testing is done with Mocha. Run the tests with
 
-    mocha
+    npm test
 
 
 
