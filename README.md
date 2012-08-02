@@ -60,6 +60,9 @@ which takes an _error_ and the _ouput_ of the processing when the job has been d
 
 This output will be merged with the doc (if _error_ is `null`) and saved.
 
+
+### Conflict Resolution
+
 Note that the doc could have changed after the job has been started
 so that the doc can not be saved. In that case CouchDB Worker will reset its worker state.
 The document will again show up in the changes feed an processed again.
