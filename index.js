@@ -1,6 +1,10 @@
 /*
  * CouchDB Worker
- * (c) Johannes J. Schmidt, 2012
+ *
+ * A worker module that manages state.
+ *
+ * Author: Johannes J. Schmidt
+ * (c) null2 GmbH, 2012
  * MIT Licensed
  */
 

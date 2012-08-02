@@ -1,3 +1,13 @@
+/*
+ * CouchDB Worker
+ *
+ * Mocha tests for Worker module.
+ *
+ * Author: Johannes J. Schmidt
+ * (c) null2 GmbH, 2012
+ * MIT Licensed
+ */
+
 var assert = require("assert");
 var Worker = require("./../lib/worker");
 

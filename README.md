@@ -147,6 +147,6 @@ Testing is done with Mocha. Run the tests with
 
 ## License & Copyright
 
-(c) 2012 Johannes J. Schmidt, Berlin
+(c) null2 GmbH, 2012
 
 Licensed under the Apache License 2.0.

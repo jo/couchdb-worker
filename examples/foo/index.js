@@ -1,9 +1,10 @@
 /*
  * CouchDB Worker Foo Example
- *
+ * 
  * example mimimal worker that inserts foo: 'bar' into every document.
  *
- * (c) Johannes J. Schmidt, 2012
+ * Author: Johannes J. Schmidt
+ * (c) null2 GmbH, 2012
  * MIT Licensed
  */
 
