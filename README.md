@@ -9,66 +9,73 @@ A worker module that manages state.
     npm install couchdb-worker
 
 
-## Create a new Worker
+## Create a new Worker for a _single_ database
+
+    new Worker(config, db)
+
 
 Basically you define an object with two functions: _check_ and _process_:
 
     var Worker = require("couchdb-worker");
 
     new Worker({
-      name: 'foo',
+      name: 'myworker',
       server: "http://127.0.0.1:5984",
       processor: {
         check: function(doc) {
-          return true
+          return true;
         },
-        process: function(doc, done) {
-          // do something with the doc
-          done(null, {
-            foo: 'bar'
+        process: function(doc, done_func) {
+          // Do work and call done_func callback with an error object
+          // and the attributes to be merged into the doc.
+          // You have access to the config document, see below.
+          done_func(null, {
+            foo: this.config.big_animal ? 'Bär' : 'bar'
           });
         }
       }
     }, 'mydb');
 
 
-The _check_ function is called to decide whether this doc should be processed generally.
+This example processor inserts the property _foo_ with the value `bar` or `Bär`,
+depending on the config document, into every document.
+
+
+### `Check`
+
+The `check` function is called to decide whether this doc should be processed generally.
 For example you might only be interested in docs of a certain field.
+
 This function is the same as a [filter function](http://guide.couchdb.org/draft/notifications.html#filters).
 
-The processing takes place in the  _process_ function.
-This function takes two arguments: the _doc_ and a callback function, _done_,
+CouchDB Worker will support Server Side Filters at some point in the future.
+
+
+### `process`
+
+The processing takes place in the  `process` function.
+
+This function takes two arguments: the _doc_ and a callback function, `done_func`,
 which takes an _error_ and the _ouput_ of the processing when the job has been done.
+
 This output will be merged with the doc (if _error_ is `null`) and saved.
 Note that the doc could have been changed after the job has been started
 so that the doc variable could differ from the doc when it gets saved.
 
-The processor above inserts the property _foo_ with the value _bar_ into every document.
 
-Also take a look at examples/.
+Also take a look at [examples](couchdb-worker/tree/master/examples).
 
 
-## Create a new Worker for all databases
+## Create a new Worker for _all_ databases
+
+    new Worker.pool(config)
+
 
 Use a _Worker.pool_ if you want to spawn workers for each database:
 
     var Worker = require("couchdb-worker");
 
-    new Worker.pool({
-      name: 'foo',
-      server: "http://127.0.0.1:5984",
-      processor: {
-        check: function(doc) {
-          return true
-        },
-        process: function(doc, done) {
-          // do something with the doc
-          done(null, {
-            foo: 'bar'
-          });
-        }
-      }
-    });
+    new Worker.pool(config);
 
 
 ## Per Database Configuration
@@ -81,7 +88,7 @@ A Worker Configuration File might look like this:
     {
       "_id": "worker-config/myworker",
       "_rev": "1-a653b27246b01cf9204fa9f5dee7cc64",
-      "my_worker_setting": "100%"
+      "big_animal": true
     }
 
 You can update the config live so that all future processings will take the new configuration.
@@ -90,7 +97,7 @@ You can update the config live so that all future processings will take the new 
 ## Worker Status Document
 
 The worker stores a status document inside the target database.
-The worker stores its last update seq here and can resume at the point it has started the last processing.
+The worker stores its last update seq here and can resume where it left off.
 
     {
       "_id": "worker-status/myworker",
@@ -109,7 +116,7 @@ it keeps a lock when many workers listen to the same database.
 The status object of the worker could look like this:
 
     "worker_status": {
-      "worker-name": {
+      "myworker": {
         "status": "completed"
       }
     }
