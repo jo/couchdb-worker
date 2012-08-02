@@ -9,8 +9,7 @@
   "version": "0.0.1",
   "dependencies": {
     "request": "*",
-    "node.extend": ">=1.0.0",
-    "follow": ">=0.8.0"
+    "node.extend": ">=1.0.0"
   },
   "devDependencies": {
     "mocha": "*"
