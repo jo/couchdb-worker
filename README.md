@@ -66,7 +66,7 @@ The worker stores its last update seq here and can resume at the point it has st
     {
       "_id": "worker-status/attachments",
       "_rev": "543-1922b5623d07453a753ab6ab2c634d04",
-      "last_update_seq": 34176
+      "last_seq": 34176
     }
 
 
