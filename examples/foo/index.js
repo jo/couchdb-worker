@@ -19,7 +19,7 @@ new Worker({
     process: function(doc, done) {
       // do something with the doc
       setTimeout(function() {
-        done({
+        done(null, {
           foo: 'bar'
         });
       }, 200);

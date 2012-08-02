@@ -22,7 +22,7 @@ Define an object with two functions: _check_ and _process_:
         var output = {
           foo: 'bar'
         };
-        done(output);
+        done(null, output);
       }
     }
 
@@ -31,9 +31,9 @@ For example you might only be interested in docs of a certain field.
 This function is the same as a [filter function](http://guide.couchdb.org/draft/notifications.html#filters).
 
 The processing takes place in the  _process_ function.
-This function takes two arguments: the doc and a callback function,
-which takes the ouput of the processing when the job has been done.
-This output will be merged with the doc and saved.
+This function takes two arguments: the _doc_ and a callback function, _done_,
+which takes an _error_ and the _ouput_ of the processing when the job has been done.
+This output will be merged with the doc (if _error_ is `null`) and saved.
 Note that the doc could have been changed after the job has been started
 so that the doc variable could differ from the doc when it gets saved.
 
