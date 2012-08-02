@@ -24,11 +24,9 @@ Basically you define an object with two functions: _check_ and _process_:
         },
         process: function(doc, done) {
           // do something with the doc
-          setTimeout(function() {
-            done(null, {
-              foo: 'bar'
-            });
-          }, 200);
+          done(null, {
+            foo: 'bar'
+          });
         }
       }
     }, 'mydb');
@@ -65,11 +63,9 @@ Use a _Worker.pool_ if you want to spawn workers for each database:
         },
         process: function(doc, done) {
           // do something with the doc
-          setTimeout(function() {
-            done(null, {
-              foo: 'bar'
-            });
-          }, 200);
+          done(null, {
+            foo: 'bar'
+          });
         }
       }
     });
