@@ -1,0 +1,21 @@
+{
+  "name": "couchdb-worker",
+  "description": "This is a base couchdb worker that manages worker status.",
+  "author": {
+    "name": "Johannes J. Schmidt",
+    "url": "http://github.com/jo",
+    "email": "schmidt@netzmerk.com"
+  },
+  "version": "0.0.1",
+  "dependencies": {
+    "request": "*",
+    "follow": ">=0.8.0"
+  },
+  "devDependencies": {
+    "mocha": "*"
+  },
+  "main": "index",
+  "scripts": {
+    "test": "mocha"
+  }
+}
