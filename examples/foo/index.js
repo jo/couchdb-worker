@@ -1,15 +1,16 @@
 /*
  * CouchDB Worker Foo Example
- *
+ * 
  * example mimimal worker that inserts foo: 'bar' into every document.
  *
- * (c) Johannes J. Schmidt, 2012
+ * Author: Johannes J. Schmidt
+ * (c) null2 GmbH, 2012
  * MIT Licensed
  */
 
 var Worker = require("couchdb-worker");
 
-new Worker({
+new Worker.pool({
   name: 'foo',
   server: process.env.HOODIE_SERVER || "http://127.0.0.1:5984",
   processor: {
@@ -18,11 +19,9 @@ new Worker({
     },
     process: function(doc, done) {
       // do something with the doc
-      setTimeout(function() {
-        done({
-          foo: 'bar'
-        });
-      }, 200);
+      done(null, {
+        foo: 'bar'
+      });
     }
   }
 });

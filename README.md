@@ -9,37 +9,81 @@ A worker module that manages state.
     npm install couchdb-worker
 
 
-## Create a new Worker
+## Create a new Worker for a _single_ database
 
-Define an object with two functions: _check_ and _process_:
+    new Worker(config, db)
 
-    var processor = {
-      check: function(doc) {
-        return true
-      },
-      process: function(doc, done) {
-        // do something with the doc
-        var output = {
-          foo: 'bar'
-        };
-        done(output);
+
+Basically you define an object with two functions: _check_ and _process_:
+
+    var Worker = require("couchdb-worker");
+
+    new Worker({
+      name: 'myworker',
+      server: "http://127.0.0.1:5984",
+      processor: {
+        check: function(doc) {
+          return true;
+        },
+        process: function(doc, done_func) {
+          // Do work and call done_func callback with an error object
+          // and the attributes to be merged into the doc.
+          // You have access to the config document, see below.
+          done_func(null, {
+            foo: this.config.big_animal ? 'Bär' : 'bar'
+          });
+        }
       }
-    }
+    }, 'mydb');
 
-The _check_ function is called to decide whether this doc should be processed generally.
+
+This example processor inserts the property _foo_ with the value `bar` or `Bär`,
+depending on the config document, into every document.
+
+
+### `Check`
+
+The `check` function is called to decide whether this doc should be processed generally.
 For example you might only be interested in docs of a certain field.
-This function is the same as a [filter function](http://guide.couchdb.org/draft/notifications.html#filters).
 
-The processing takes place in the  _process_ function.
-This function takes two arguments: the doc and a callback function,
-which takes the ouput of the processing when the job has been done.
-This output will be merged with the doc and saved.
-Note that the doc could have been changed after the job has been started
-so that the doc variable could differ from the doc when it gets saved.
+This function is similar to a [filter function](http://guide.couchdb.org/draft/notifications.html#filters).
 
-The processor above inserts the property _foo_ with the value _bar_ into every document.
+CouchDB Worker will support Server Side Filters at some point in the future.
 
-Also take a look at examples/.
+
+### `process`
+
+The processing takes place in the  `process` function.
+
+This function takes two arguments: the _doc_ and a callback function, `done_func`,
+which takes an _error_ and the _ouput_ of the processing when the job has been done.
+
+This output will be merged with the doc (if _error_ is `null`) and saved.
+
+
+### Conflict Resolution
+
+Note that the doc could have changed after the job has been started
+so that the doc can not be saved. In that case CouchDB Worker will reset its worker state.
+The document will again show up in the changes feed an processed again.
+
+Future versions of CouchDB Worker will provide a _resolve conflict_ callback,
+where you can resolve that conflict in order to keep your heavy computed output.
+
+
+Also take a look at [examples](couchdb-worker/tree/master/examples).
+
+
+## Create a new Worker for _all_ databases
+
+    new Worker.pool(config)
+
+
+Use a _Worker.pool_ if you want to spawn workers for each database:
+
+    var Worker = require("couchdb-worker");
+
+    new Worker.pool(config);
 
 
 ## Per Database Configuration
@@ -52,7 +96,7 @@ A Worker Configuration File might look like this:
     {
       "_id": "worker-config/myworker",
       "_rev": "1-a653b27246b01cf9204fa9f5dee7cc64",
-      "my_worker_setting": "100%"
+      "big_animal": true
     }
 
 You can update the config live so that all future processings will take the new configuration.
@@ -61,12 +105,13 @@ You can update the config live so that all future processings will take the new 
 ## Worker Status Document
 
 The worker stores a status document inside the target database.
-The worker stores its last update seq here and can resume at the point it has started the last processing.
+The worker stores its last update seq here and can resume where it left off.
 
     {
-      "_id": "worker-status/attachments",
+      "_id": "worker-status/myworker",
       "_rev": "543-1922b5623d07453a753ab6ab2c634d04",
-      "last_update_seq": 34176
+      "last_seq": 34176,
+      "docs_processed": 145
     }
 
 
@@ -79,9 +124,8 @@ it keeps a lock when many workers listen to the same database.
 The status object of the worker could look like this:
 
     "worker_status": {
-      "worker-name": {
-        "status": "completed",
-        "revpos": 160
+      "myworker": {
+        "status": "completed"
       }
     }
 
@@ -108,12 +152,12 @@ or pass them to the commandline:
 
 Testing is done with Mocha. Run the tests with
 
-    mocha
+    npm test
 
 
 
 ## License & Copyright
 
-(c) 2012 Johannes J. Schmidt, Berlin
+(c) null2 GmbH, 2012
 
-Licensed under the Apache License 2.0.
+License: The MIT License
