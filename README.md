@@ -46,7 +46,7 @@ depending on the config document, into every document.
 The `check` function is called to decide whether this doc should be processed generally.
 For example you might only be interested in docs of a certain field.
 
-This function is the same as a [filter function](http://guide.couchdb.org/draft/notifications.html#filters).
+This function is similar to a [filter function](http://guide.couchdb.org/draft/notifications.html#filters).
 
 CouchDB Worker will support Server Side Filters at some point in the future.
 
