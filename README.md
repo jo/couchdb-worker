@@ -149,4 +149,4 @@ Testing is done with Mocha. Run the tests with
 
 (c) null2 GmbH, 2012
 
-Licensed under the Apache License 2.0.
+License: The MIT License
