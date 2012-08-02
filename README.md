@@ -64,9 +64,10 @@ The worker stores a status document inside the target database.
 The worker stores its last update seq here and can resume at the point it has started the last processing.
 
     {
-      "_id": "worker-status/attachments",
+      "_id": "worker-status/myworker",
       "_rev": "543-1922b5623d07453a753ab6ab2c634d04",
-      "last_seq": 34176
+      "last_seq": 34176,
+      "docs_processed": 145
     }
 
 
@@ -80,8 +81,7 @@ The status object of the worker could look like this:
 
     "worker_status": {
       "worker-name": {
-        "status": "completed",
-        "revpos": 160
+        "status": "completed"
       }
     }
 
