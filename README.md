@@ -59,8 +59,13 @@ This function takes two arguments: the _doc_ and a callback function, `done_func
 which takes an _error_ and the _ouput_ of the processing when the job has been done.
 
 This output will be merged with the doc (if _error_ is `null`) and saved.
-Note that the doc could have been changed after the job has been started
-so that the doc variable could differ from the doc when it gets saved.
+
+Note that the doc could have changed after the job has been started
+so that the doc can not be saved. In that case CouchDB Worker will reset its worker state.
+The document will again show up in the changes feed an processed again.
+
+Future versions of CouchDB Worker will provide a _resolve conflict_ callback,
+where you can resolve that conflict in order to keep your heavy computed output.
 
 
 Also take a look at [examples](couchdb-worker/tree/master/examples).

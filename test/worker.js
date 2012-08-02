@@ -131,6 +131,12 @@ describe("CouchDBWorker", function() {
     });
   });
 
+  describe("_reset", function() {
+    it("should be a function", function() {
+      assert.equal('function', typeof worker._reset);
+    });
+  });
+
   describe("_mergeResult", function() {
     it("should be a function", function() {
       assert.equal('function', typeof worker._mergeResult);
