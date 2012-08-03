@@ -41,7 +41,31 @@ This example processor inserts the property _foo_ with the value `bar` or `Bär`
 depending on the config document, into every document.
 
 
-### `Check`
+
+## Create a new Worker for All Databases
+
+    new Worker.pool(config)
+
+
+Use a _Worker.pool_ if you want to spawn workers for each database:
+
+    var Worker = require("couchdb-worker");
+
+    new Worker.pool(config);
+
+
+## Worker Options
+
+### `name`
+
+Each worker needs a uniq name. It will be used for status objects and
+config - and status document ids.
+
+### `server`
+
+The CouchDB server url.
+
+### `processor.check`
 
 The `check` function is called to decide whether this doc should be processed generally.
 For example you might only be interested in docs of a certain field.
@@ -50,16 +74,34 @@ This function is similar to a [filter function](http://guide.couchdb.org/draft/n
 
 CouchDB Worker will support Server Side Filters at some point in the future.
 
-
-### `process`
+### `processor.process`
 
 The processing takes place in the  `process` function.
 
 This function takes two arguments: the _doc_ and a callback function, `done_func`,
 which takes an _error_ and the _ouput_ of the processing when the job has been done.
 
-This output will be merged with the doc (if _error_ is `null`) and saved.
+This output will be merged (using jQuery like deep `extend`) with the doc (if _error_ is `null`) and saved.
 
+### `config_id`
+
+The id of the configuration document.
+
+### `status_id`
+
+The id of the status document.
+
+### `batch_size`
+
+Number of changes to keep in RAM. Higher value means less HTTP requests but higher memory consumption.
+
+### `timeout`
+
+Number of miliseconds for timeout the changes feed.
+
+### `since`
+
+`update_seq` to initially start listening.
 
 ### Conflict Resolution
 
@@ -74,22 +116,11 @@ where you can resolve that conflict in order to keep your heavy computed output.
 Also take a look at [examples](couchdb-worker/tree/master/examples).
 
 
-## Create a new Worker for All Databases
-
-    new Worker.pool(config)
-
-
-Use a _Worker.pool_ if you want to spawn workers for each database:
-
-    var Worker = require("couchdb-worker");
-
-    new Worker.pool(config);
-
-
 ## Per Database Configuration
 
 Configuration is done in a worker configuration document inside the target database.
-The worker looks at all databases and only process if there exists such a configuration file.
+
+The worker looks only processes if there exists such a configuration file.
 
 A Worker configuration document might look like this:
 
