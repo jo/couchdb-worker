@@ -168,20 +168,12 @@ processing the same document.
 
 ## Running the Worker
 
-To start, this needs either the following environment variables set:
-
-    export HOODIE_SERVER=http://example.org
     npm start
-
-
-or pass them to the commandline:
-
-    HOODIE_SERVER=http://example.org npm start
 
 
 ## Testing
 
-Testing is done with Mocha. Run the tests with
+Testing is done with Mocha.
 
     npm test
 
