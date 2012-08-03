@@ -45,12 +45,14 @@ describe("CouchDBWorker", function() {
   });
 
   describe("_check", function() {
+    var doc = { _id: 'mydoc' };
+
     it("should be a function", function() {
       assert.equal('function', typeof worker._check);
     });
 
     it("should return false if no config present", function() {
-      assert(!worker._check());
+      assert(!worker._check(doc));
     });
 
     it("should return processor.check when config is present", function() {
@@ -58,14 +60,14 @@ describe("CouchDBWorker", function() {
 
       worker.config = {};
 
-      assert(worker._check({}));
+      assert(worker._check(doc));
 
       var oldcheck = worker.processor.check;
       worker.processor.check = function() {
         return check;
       };
 
-      assert.equal(check, worker._check({}));
+      assert.equal(check, worker._check(doc));
 
       // reset
       worker.processor.check = oldcheck;
@@ -76,6 +78,7 @@ describe("CouchDBWorker", function() {
       worker.config = {};
 
       assert(!worker._check({
+        _id: 'mydoc',
         worker_status: {
           'test-worker': {
             status: 'completed'
