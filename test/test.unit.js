@@ -1,7 +1,7 @@
 /*
  * CouchDB Worker
  *
- * Mocha tests for Worker module.
+ * Mocha Unit Tests for Worker module.
  *
  * Author: Johannes J. Schmidt
  * (c) null2 GmbH, 2012
@@ -9,6 +9,7 @@
  */
 
 var assert = require("assert");
+var request = require("request");
 var Worker = require("./../lib/worker");
 
 describe("CouchDBWorker", function() {
@@ -28,7 +29,25 @@ describe("CouchDBWorker", function() {
       }
     }
   };
-  var db = '_users';
+  var db = 'couchdb-worker-test';
+
+  before(function(cb) {
+    request({
+      url: options.server + '/' + db,
+      method: 'DELETE'
+    }, function(error, resp, data) {
+      request({
+        url: options.server + '/' + db,
+        method: 'PUT'
+      }, function(error, resp, data) {
+        if (error !== null) {
+          console.error('Error: Could not create test database!');
+          return;
+        }
+        cb();
+      });
+    });
+  });
 
   var worker = new Worker(options, db);
 

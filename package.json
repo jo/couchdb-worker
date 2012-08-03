@@ -12,6 +12,7 @@
     "node.extend": ">=1.0.0"
   },
   "devDependencies": {
+    "request": "*",
     "mocha": "*"
   },
   "main": "index",
