@@ -9,7 +9,7 @@ A worker module that manages state.
     npm install couchdb-worker
 
 
-## Create a new Worker for a _single_ database
+## Create a new Worker for a Single Database
 
     new Worker(config, db)
 
@@ -74,7 +74,7 @@ where you can resolve that conflict in order to keep your heavy computed output.
 Also take a look at [examples](couchdb-worker/tree/master/examples).
 
 
-## Create a new Worker for _all_ databases
+## Create a new Worker for All Databases
 
     new Worker.pool(config)
 
@@ -91,7 +91,7 @@ Use a _Worker.pool_ if you want to spawn workers for each database:
 Configuration is done in a worker configuration document inside the target database.
 The worker looks at all databases and only process if there exists such a configuration file.
 
-A Worker Configuration File might look like this:
+A Worker configuration document might look like this:
 
     {
       "_id": "worker-config/myworker",
