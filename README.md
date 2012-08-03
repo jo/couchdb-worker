@@ -142,6 +142,7 @@ The worker stores its last update seq here and can resume where it left off.
       "_id": "worker-status/myworker",
       "_rev": "543-1922b5623d07453a753ab6ab2c634d04",
       "last_seq": 34176,
+      "docs_checked": 145,
       "docs_processed": 145
     }
 
