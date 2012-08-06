@@ -17,9 +17,6 @@ describe("CouchDBWorker", function() {
     name: 'test-worker',
     server: 'http://localhost:5984',
     processor: {
-      check: function(doc) {
-        return true;
-      },
       process: function(doc, done) {
         // do something with the doc
         var output = {
@@ -72,6 +69,15 @@ describe("CouchDBWorker", function() {
 
     it("should return false if no config present", function() {
       assert(!worker._check(doc));
+    });
+
+    it("should return true when config is present but processor.check", function() {
+      worker.config = {};
+
+      assert(worker._check(doc));
+
+      // reset
+      delete worker.config;
     });
 
     it("should return processor.check when config is present", function() {

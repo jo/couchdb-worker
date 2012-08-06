@@ -23,7 +23,7 @@ Basically you define an object with two functions: _check_ and _process_:
       server: "http://127.0.0.1:5984",
       processor: {
         check: function(doc) {
-          return true;
+          return doc.type === 'post';
         },
         process: function(doc, done_func) {
           // Do work and call done_func callback with an error object

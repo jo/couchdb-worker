@@ -14,9 +14,6 @@ new Worker.pool({
   name: 'foo',
   server: process.env.COUCHDB_SERVER || "http://127.0.0.1:5984",
   processor: {
-    check: function(doc) {
-      return true
-    },
     process: function(doc, done) {
       // do something with the doc
       done(null, {
