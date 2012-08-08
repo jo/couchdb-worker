@@ -6,11 +6,10 @@
     "url": "http://github.com/jo",
     "email": "schmidt@netzmerk.com"
   },
-  "version": "0.4.1",
+  "version": "0.4.2",
   "dependencies": {
     "request": "*",
-    "underscore": "*",
-    "node.extend": ">=1.0.0"
+    "underscore": "*"
   },
   "devDependencies": {
     "request": "*",
