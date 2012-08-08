@@ -145,11 +145,18 @@ describe("CouchDBWorker", function() {
 
       assert(!('error' in doc.worker_status[worker.name]));
     });
-  });
+    it("should insert additional status", function() {
+      var status = 'mystatus',
+          additionalStatus = {
+            foo: 'bar'
+          },
+          doc = {};
 
-  describe("_processDone", function() {
-    it("should be a function", function() {
-      assert.equal('function', typeof worker._processDone);
+      worker._setWorkerStatus(doc, status, null, additionalStatus);
+
+      assert.equal('object', typeof doc.worker_status);
+      assert.equal('object', typeof doc.worker_status[worker.name]);
+      assert.equal(additionalStatus.foo, doc.worker_status[worker.name].foo);
     });
   });
 
