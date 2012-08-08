@@ -18,13 +18,12 @@ var config = {
   server: process.env.COUCHDB_SERVER || "http://127.0.0.1:5984",
   processor: {
     process: function(doc, name, done) {
-      var mimes = { },
+      var mimes = doc.mimes || {},
           url = this.server
-            + '/' + encodeURIComponent(this.server)
+            + '/' + encodeURIComponent(this.db)
             + '/' + encodeURIComponent(doc._id)
-            + '/' + name,
+            + '/' + encodeURIComponent(name),
           file = spawn('file', ['--mime', '--brief', '-']);
-
 
       file.stdout.on('data', function(data) {
         mimes[name] = data.toString();
