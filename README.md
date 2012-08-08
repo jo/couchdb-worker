@@ -9,7 +9,7 @@ A worker module that manages state.
     npm install couchdb-worker
 
 
-## Create a new Worker for a Single Database
+## Create a new Worker
 
     new Worker(config, db)
 
@@ -43,19 +43,6 @@ depending on the config document, into every document.
 The processing takes place in the  `process` function,
 
 The return value of the `check` function decides wheather the worker is interested in a doc or not.
-
-
-
-## Create a new Worker for All Databases
-
-    new Worker.pool(config)
-
-
-Use a _Worker.pool_ if you want to spawn workers for each database:
-
-    var Worker = require("couchdb-worker");
-
-    new Worker.pool(config);
 
 
 ## Run the Worker
@@ -144,23 +131,25 @@ This output will be merged (using jQuery like deep `extend`) with the doc (if _e
 
 ### `config_id`
 
-The id of the configuration document.
+The id of the configuration document. Default is `worker-config/<worker-name>`.
 
 ### `status_id`
 
-The id of the status document.
+The id of the status document. Default is `worker-status/<worker-name>`.
 
 ### `batch_size`
 
 Number of changes to keep in RAM. Higher value means less HTTP requests but higher memory consumption.
 
+Default is `10`.
+
 ### `timeout`
 
-Number of miliseconds for timeout the changes feed.
+Number of miliseconds for timeout the changes feed. Defaults to `60000`.
 
 ### `since`
 
-`update_seq` to initially start listening.
+`update_seq` to initially start listening. Default is `0`.
 
 ### Conflict Resolution
 

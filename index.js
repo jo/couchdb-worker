@@ -9,6 +9,4 @@
  */
 
 module.exports = require('./lib/worker');
-module.exports.pool = require('./lib/worker-pool');
 module.exports.attachments = require('./lib/attachments-worker');
-module.exports.attachments.pool = require('./lib/attachments-worker-pool');
