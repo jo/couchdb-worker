@@ -127,36 +127,14 @@ describe("CouchDBWorker", function() {
       assert.equal('function', typeof worker._setWorkerStatus);
     });
     it("should insert status", function() {
-      var status = 'mystatus',
-          error = 'myerror',
+      var status = { foo: 'bar' },
           doc = {};
 
-      worker._setWorkerStatus(doc, status, error);
+      worker._setWorkerStatus(doc, status);
 
       assert.equal('object', typeof doc.worker_status);
       assert.equal('object', typeof doc.worker_status[worker.name]);
-      assert.equal(status, doc.worker_status[worker.name].status);
-      assert.equal(error, doc.worker_status[worker.name].error);
-    });
-    it("should not insert error if error is null", function() {
-      var doc = {};
-
-      worker._setWorkerStatus(doc, 'mystatus', null);
-
-      assert(!('error' in doc.worker_status[worker.name]));
-    });
-    it("should insert additional status", function() {
-      var status = 'mystatus',
-          additionalStatus = {
-            foo: 'bar'
-          },
-          doc = {};
-
-      worker._setWorkerStatus(doc, status, null, additionalStatus);
-
-      assert.equal('object', typeof doc.worker_status);
-      assert.equal('object', typeof doc.worker_status[worker.name]);
-      assert.equal(additionalStatus.foo, doc.worker_status[worker.name].foo);
+      assert.equal(status.foo, doc.worker_status[worker.name].foo);
     });
   });
 
