@@ -126,6 +126,8 @@ CouchDB Worker will support Server Side Filters at some point in the future.
 
 This function takes two arguments: the _doc_ and a callback function, `done_func`,
 which takes an _error_ and the _ouput_ of the processing when the job has been done.
+`done_func` also takes a status object as a third argument,
+which will be used to set the worker status if present. See lib/attachments-worker.js.
 
 This output will be merged (using jQuery like deep `extend`) with the doc (if _error_ is `null`) and saved.
 
