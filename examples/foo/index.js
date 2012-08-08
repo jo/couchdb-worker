@@ -27,5 +27,5 @@ var config = {
 if (process.env.COUCH_DB) {
   new Worker(config, process.env.COUCH_DB);
 } else {
-  new Worker.pool(config);
+  console.error('I need the environment variable COUCH_DB');
 }
