@@ -1,12 +1,22 @@
 {
   "name": "couchdb-worker",
-  "description": "This is a base couchdb worker that manages worker status.",
+  "version": "0.4.4",
+  "description": "This is an abstract CouchDB worker that manages worker status and handle attachment processing.",
+  "keywords": ["CouchDB", "attachments", "worker", "abstract"],
+  "homepage": "https://github.com/jo/couchdb-worker",
+  "bugs": {
+    "url" : "http://github.com/jo/couchdb-worker/issues",
+    "email" : "schmidt@netzmerk.com"
+  },
   "author": {
     "name": "Johannes J. Schmidt",
-    "url": "http://github.com/jo",
-    "email": "schmidt@netzmerk.com"
+    "email": "schmidt@netzmerk.com",
+    "url": "http://die-tf.de"
   },
-  "version": "0.4.4",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jo/couchdb-worker"
+  },
   "dependencies": {
     "request": "*",
     "underscore": "*"
