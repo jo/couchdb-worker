@@ -1,6 +1,6 @@
 {
   "name": "couchdb-worker",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "This is an abstract CouchDB worker that manages worker status and handle attachment processing.",
   "keywords": ["CouchDB", "couchdb-worker", "attachments", "worker", "abstract"],
   "homepage": "https://github.com/jo/couchdb-worker",
