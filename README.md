@@ -84,7 +84,7 @@ To run the tests, run `grunt`.
 The tests run agains a CouchDB server, and they create random databases of the form `couchdb-worker-test-<uuid>`.
 The default url is `http://localhost:5984`,
 which can be changed by setting the `COUCH_URL` environment variable,
-eg via `COUCH_URL=http://me.iriscouch.com grunt`.
+eg via `COUCH_URL=http://me:secure@me.iriscouch.com grunt`.
 
 ## Contributing
 In lieu of a formal styleguide, take care to maintain the existing coding style.
