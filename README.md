@@ -46,6 +46,37 @@ See [follow](https://github.com/iriscouch/follow) for documentation.
 * `db` | [nano](https://github.com/dscape/nano) options
 * `follow` | [follow](https://github.com/iriscouch/follow) options
 
+## `process(doc, done)`
+This is where you do your work. It receives a `doc`, which is the current document,
+as well as a `done` callback function, which must be invoked when the work is done.
+
+You can now modify the `doc`. It will be saved by couchdb-worker.
+
+The `done` callback accepts itself two arguments: an `error` property,
+where you can inform couchdb-worker about any errors (it will also be stored inside the document)
+and a `next` callback function which is called when the modified document is saved.
+
+## Status
+* couchdb-worker stores its state inside the document in an object called `worker_status`.
+* Each worker manages its own state inside this object, eg `worker_status.myworker`.
+* The state can be `triggered`, `error` or `complete`.
+* Only one worker can run at a time on one document.
+* You can store your own worker status information (a retry count for example)
+inside the `worker_status` object.
+* If the processing failed, `worker_status.myworker.error` will contain the error.
+
+A status object can be
+
+```javascript
+{
+  worker_status: {
+    myworker: {
+      status: 'complete'
+    }
+  }
+}
+```
+
 ## Examples
 ```javascript
 var worker = require('couchdb-worker');
@@ -63,9 +94,7 @@ worker.listen({
   follow: {
     since: 42,
     heartbeat: 1000,
-    filter: function(doc, req) {
-      return !doc.dirty && !doc.stinky;
-    },
+    filter: 'myddoc/myfilter',
     query_params: {
       worker: 'my-worker',
       app: '1234'

@@ -139,6 +139,21 @@ exports.listen = {
     });
     this.db.insert({});
   },
+  'worker status error info': function(test) {
+    test.expect(4);
+    function process(doc, next) {
+      next({ failed: true, reason: 'my_reason' }, function(err, doc) {
+        test.equal(doc.worker_status.myworker.status, 'error', 'worker status should be set to `error`');
+        test.equal(typeof doc.worker_status.myworker.error, 'object', 'worker status error should be an object');
+        test.ok(doc.worker_status.myworker.error && doc.worker_status.myworker.error.failed, 'worker status error should be failed');
+        test.equal(doc.worker_status.myworker.error && doc.worker_status.myworker.error.reason, 'my_reason', 'worker status error reason should be set');
+        w.stop();
+        test.done();
+      });
+    }
+    var w = worker.listen({ db: this.url, id: 'myworker', process: process });
+    this.db.insert({});
+  },
   'process arguments': function(test) {
     test.expect(3);
     var w;
