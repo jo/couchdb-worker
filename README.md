@@ -43,8 +43,8 @@ See [follow](https://github.com/iriscouch/follow) for documentation.
 ## Options
 * `id` | Unique identifier for the worker.
 * `process` | Processor function. Receives `doc` and `done` arguments.
-* 'db' | [nano](https://github.com/dscape/nano) options
-* 'follow' | [follow](https://github.com/iriscouch/follow) options
+* `db` | [nano](https://github.com/dscape/nano) options
+* `follow` | [follow](https://github.com/iriscouch/follow) options
 
 ## Examples
 ```javascript
