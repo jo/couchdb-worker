@@ -1,13 +1,8 @@
 {
   "name": "couchdb-worker",
-  "version": "0.6.0",
-  "description": "This is an abstract CouchDB worker that manages worker status and handle attachment processing.",
-  "keywords": ["CouchDB", "couchdb-worker", "attachments", "worker", "abstract"],
+  "description": "CouchDB worker module that manages state",
+  "version": "1.0.0",
   "homepage": "https://github.com/jo/couchdb-worker",
-  "bugs": {
-    "url" : "http://github.com/jo/couchdb-worker/issues",
-    "email" : "schmidt@netzmerk.com"
-  },
   "author": {
     "name": "Johannes J. Schmidt",
     "email": "schmidt@netzmerk.com",
@@ -15,18 +10,32 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/jo/couchdb-worker"
+    "url": "git://github.com/jo/couchdb-worker.git"
   },
-  "dependencies": {
-    "request": "*",
-    "underscore": "*"
+  "bugs": {
+    "url": "https://github.com/jo/couchdb-worker/issues"
+  },
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "https://github.com/jo/couchdb-worker/blob/master/LICENSE-MIT"
+    }
+  ],
+  "main": "lib/couchdb-worker",
+  "engines": {
+    "node": ">= 0.8.0"
+  },
+  "scripts": {
+    "test": "grunt nodeunit"
   },
   "devDependencies": {
-    "request": "*",
-    "mocha": "*"
+    "grunt-contrib-jshint": "~0.1.1",
+    "grunt-contrib-nodeunit": "~0.1.2",
+    "grunt-contrib-watch": "~0.2.0",
+    "grunt": "~0.4.0"
   },
-  "main": "index",
-  "scripts": {
-    "test": "mocha"
+  "keywords": ["couchdb", "couchdb-worker", "worker"],
+  "dependencies": {
+    "nano": "~3.3.8"
   }
 }
