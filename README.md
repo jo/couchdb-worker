@@ -98,8 +98,8 @@ There were some breaking changes, so had to move up the major version.
 
 ## Release History
 * `1.0.0`: complete rewrite and new (functional) API using [nano](https://github.com/dscape/nano)
-(and [follow](https://github.com/iriscouch/follow)) _currently no attachment support_
-* `0.x`: object oriented version with attachment support
+(and [follow](https://github.com/iriscouch/follow)) - _currently no attachment support_
+* `0.x`: object oriented version with attachment support - _The `0.x` line continues on the v0 branch_
 
 ## License
 Copyright (c) 2012-2013 Johannes J. Schmidt, null2 GmbH
