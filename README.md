@@ -1,4 +1,4 @@
-# couchdb-worker [![Build Status](https://secure.travis-ci.org/jo/couchdb-worker.png?branch=master)](http://travis-ci.org/jo/couchdb-worker)
+# couchdb-worker
 
 Abstract CouchDB worker module
 
