@@ -39,6 +39,10 @@ See [follow](https://github.com/iriscouch/follow) for documentation.
 * `process` | Processor function. Receives `doc` and `done` arguments.
 * `db` | [nano](https://github.com/dscape/nano) options
 * `follow` | [follow](https://github.com/iriscouch/follow) options
+* `status` | status options (optional)
+* `status.key` | Property to store status inside documents. Default is `worker_status`.
+* `status.db` | [nano](https://github.com/dscape/nano) options for status database connection. Default is to use the `db` connection.
+* `status.id` | id for status document. Only used if `statusDb` is given. Default is `worker-status/<id>`.
 
 ## `process(doc, done)`
 This is where you do your work. It receives a `doc`, which is the current document,
