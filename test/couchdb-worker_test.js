@@ -63,7 +63,7 @@ exports.listen = {
     var that = this;
     this.dbname = 'couchdb-worker-test-' + encodeURIComponent(uuid());
     this.url = url.resolve(server, this.dbname);
-    
+
     nano.db.create(this.dbname, function(err) {
       if (err) {
         throw(err);
@@ -86,6 +86,33 @@ exports.listen = {
     w.stop();
     test.done();
   },
+  'process callback arguments': function(test) {
+    test.expect(3);
+    var w;
+    function process(doc, next) {
+      test.equal(typeof doc, 'object', 'doc should be an object');
+      test.equal(doc._id, 'mydoc', 'doc _id should be `mydoc`');
+      test.equal(typeof next, 'function', 'next should be a function');
+      w.stop();
+      test.done();
+    }
+    w = worker.listen({ db: this.url, id: 'myworker', process: process });
+    this.db.insert({}, 'mydoc');
+  },
+  'next callback arguments': function(test) {
+    test.expect(3);
+    function process(doc, next) {
+      next(null, function(err, doc) {
+        test.ok(!err, 'error should be null');
+        test.equal(typeof doc, 'object', 'doc should be an object');
+        test.equal(doc._id, 'mydoc', 'doc _id should be `mydoc`');
+        w.stop();
+        test.done();
+      });
+    }
+    var w = worker.listen({ db: this.url, id: 'myworker', process: process });
+    this.db.insert({}, 'mydoc');
+  },
   'pause during process': function(test) {
     test.expect(2);
     var w;
@@ -100,44 +127,21 @@ exports.listen = {
     w = worker.listen({ db: this.url, id: 'myworker', process: process });
     this.db.insert({});
   },
-  'event worker:triggered': function(test) {
-    test.expect(1);
-    var w = worker.listen({ db: this.url, id: 'myworker', process: function() {} });
-    w.on('worker:triggered', function() {
-      test.ok(true, 'worker:triggered event should have been fired');
-      test.done();
-    });
-    this.db.insert({});
-  },
-  'event worker:committed': function(test) {
-    test.expect(1);
+  'event worker:complete': function(test) {
+    test.expect(3);
     function process(doc, next) {
       next(null, function() {
         w.stop();
       });
     }
     var w = worker.listen({ db: this.url, id: 'myworker', process: process });
-    w.on('worker:committed', function() {
-      test.ok(true, 'worker:committed event should have been fired');
+    w.on('worker:complete', function(doc) {
+      test.ok(true, 'worker:complete event should have been fired');
+      test.equal(typeof doc, 'object', 'doc should be an object');
+      test.equal(doc._id, 'mydoc', 'doc _id should be `mydoc`');
       test.done();
     });
-    this.db.insert({});
-  },
-  'event worker:error': function(test) {
-    test.expect(1);
-    function process(doc, next) {
-      // let the status update fail
-      delete doc._rev;
-      next(null, function() {
-        w.stop();
-      });
-    }
-    var w = worker.listen({ db: this.url, id: 'myworker', process: process });
-    w.on('worker:error', function() {
-      test.ok(true, 'worker:error event should have been fired');
-      test.done();
-    });
-    this.db.insert({});
+    this.db.insert({}, 'mydoc');
   },
   'worker status error info': function(test) {
     test.expect(4);
@@ -154,17 +158,24 @@ exports.listen = {
     var w = worker.listen({ db: this.url, id: 'myworker', process: process });
     this.db.insert({});
   },
-  'process arguments': function(test) {
-    test.expect(3);
-    var w;
+  'event worker:error': function(test) {
+    test.expect(5);
     function process(doc, next) {
-      test.equal(typeof doc, 'object', 'doc should be an object');
-      test.equal(doc._id, 'mydoc', 'doc should have proper _id');
-      test.equal(typeof next, 'function', 'next should be a function');
-      w.stop();
-      test.done();
+      // let the status update fail
+      delete doc._rev;
+      next(null, function() {
+        w.stop();
+      });
     }
-    w = worker.listen({ db: this.url, id: 'myworker', process: process });
+    var w = worker.listen({ db: this.url, id: 'myworker', process: process });
+    w.on('worker:error', function(err, doc) {
+      test.ok(true, 'worker:error event should have been fired');
+      test.equal(typeof err, 'object', 'err should be an object');
+      test.equal(err.error, 'conflict', 'err should be a `conflict`');
+      test.equal(typeof doc, 'object', 'doc should be an object');
+      test.equal(doc._id, 'mydoc', 'doc _id should be `mydoc`');
+      test.done();
+    });
     this.db.insert({}, 'mydoc');
   },
   'global worker status': function(test) {

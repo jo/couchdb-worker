@@ -7,6 +7,7 @@ Install the module with: `npm install couchdb-worker`
 
 ```javascript
 var worker = require('couchdb-worker');
+
 var myWorker = worker.listen({
   id: 'my-worker',
   db: 'http://localhost:5984/mydb',
@@ -15,24 +16,17 @@ var myWorker = worker.listen({
     done(null);
   }
 });
+
 myWorker.on('error', function(err) {
   console.error('Since Follow always retries on errors, this must be serious');
 });
-myWorker.on('worker:triggered', function(doc) {
-  console.log('worker triggered: ', doc);
-});
-myWorker.on('worker:completed', function(doc) {
+myWorker.on('worker:complete', function(doc) {
   console.log('worker completed: ', doc);
-});
-myWorker.on('worker:committed', function(doc) {
-  console.log('worker committed: ', doc);
 });
 myWorker.on('worker:error', function(err, doc) {
   console.log('worker error: ', err, doc);
 });
-// myWorker.status();
-myWorker.pause();
-myWorker.resume();
+
 myWorker.stop();
 ```
 
@@ -57,9 +51,9 @@ where you can inform couchdb-worker about any errors (it will also be stored ins
 and a `next` callback function which is called when the modified document is saved.
 
 ## Status
-* couchdb-worker stores its state inside the document in an object called `worker_status`.
-* Each worker manages its own state inside this object, eg `worker_status.myworker`.
-* The state can be `triggered`, `error` or `complete`.
+* couchdb-worker stores its status inside the document in an object called `worker_status`.
+* Each worker manages its own status inside this object, eg `worker_status.myworker`.
+* The status can be `triggered`, `error` or `complete`.
 * Only one worker can run at a time on one document.
 * You can store your own worker status information (a retry count for example)
 inside the `worker_status` object.
@@ -132,4 +126,5 @@ There were some breaking changes, so had to move up the major version.
 
 ## License
 Copyright (c) 2012-2013 Johannes J. Schmidt, null2 GmbH
+
 Licensed under the MIT license.
