@@ -274,64 +274,22 @@ exports.listen = {
     w.on('stop', test.done);
     this.db.insert({});
   },
-  'worker status default id': function(test) {
-    test.expect(1);
-    var w;
-    function done() {
-      w.stop();
-    }
-    function process(doc, next) {
-      next(null, done);
-    }
-    w = worker.listen({ db: this.url, id: 'myworker', process: process });
-    test.equal(w.status && w.status._id, 'worker-status/myworker', 'status should have default id');
-    w.on('stop', test.done);
-    this.db.insert({}, 'mydoc');
-  },
-  'worker status custom id': function(test) {
-    test.expect(1);
-    var w;
-    function done() {
-      w.stop();
-    }
-    function process(doc, next) {
-      next(null, done);
-    }
-    w = worker.listen({ db: this.url, id: 'myworker', process: process, status: { id: 'mystatus' } });
-    test.equal(w.status && w.status._id, 'mystatus', 'status should have custom id');
-    w.on('stop', test.done);
-    this.db.insert({}, 'mydoc');
-  },
-  'worker status updates': function(test) {
-    test.expect(6);
-    var w;
-    function done() {
-      w.stop();
-    }
-    function process(doc, next) {
-      test.equal(w.status.checked, 1, 'status should have checked one doc');
-      test.equal(w.status.seq, 1, 'status should have curren seq');
-      test.equal(w.status.last, 'mydoc', 'status should have used last `mydoc`');
-      test.equal(w.status.triggered, 1, 'status should have triggered one doc');
-      next(null, done);
-    }
-    w = worker.listen({ db: this.url, id: 'myworker', process: process });
-    test.equal(typeof w.status, 'object', 'status should be an object');
-    test.equal(w.status._id, 'worker-status/myworker', 'status should have default id');
-    w.on('stop', test.done);
-    this.db.insert({}, 'mydoc');
-  },
-  'worker status storage': function(test) {
-    test.expect(1);
-    var w;
+  'worker status': function(test) {
+    test.expect(7);
     function process(doc, next) {
       next(null);
     }
-    w = worker.listen({ db: this.url, id: 'myworker', process: process });
-    var feed = this.db.follow();
+    var w = worker.listen({ db: this.url, id: 'myworker', process: process });
+    var feed = this.db.follow({ include_docs: true });
     feed.on('change', function(change) {
       if (change.id === 'worker-status/myworker') {
         test.ok(true, 'status has been stored');
+        test.equal(change.doc.seq, 1, 'status should have curren seq');
+        test.equal(change.doc.last, 'mydoc', 'status should have used last `mydoc`');
+        test.equal(change.doc.checked, 1, 'status should have one checked doc');
+        test.equal(change.doc.triggered, 1, 'status should have one triggered doc');
+        test.equal(change.doc.completed, 1, 'status should have one completed doc');
+        test.equal(change.doc.failed, 0, 'status should have no failed docs');
         feed.stop();
         w.stop();
         test.done();
