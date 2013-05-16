@@ -77,9 +77,7 @@ exports.listen = {
     });
   },
   tearDown: function(done) {
-    nano.db.destroy(this.dbname, function() {
-      done();
-    });
+    nano.db.destroy(this.dbname, done);
   },
   'feed object': function(test) {
     test.expect(5);
