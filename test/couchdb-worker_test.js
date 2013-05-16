@@ -9,6 +9,8 @@ var nano = require('nano')(server);
 // https://gist.github.com/jed/982883
 var uuid = function b(a){return a?(a^Math.random()*16>>a/4).toString(16):([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g,b);};
 
+var noop = function() {};
+
 /*
   ======== A Handy Little Nodeunit Reference ========
   https://github.com/caolan/nodeunit
@@ -75,11 +77,13 @@ exports.listen = {
     });
   },
   tearDown: function(done) {
-    nano.db.destroy(this.dbname, done);
+    nano.db.destroy(this.dbname, function() {
+      done();
+    });
   },
   'feed object': function(test) {
     test.expect(5);
-    var w = worker.listen({ db: this.url, id: 'myworker', process: function() {} });
+    var w = worker.listen({ db: this.url, id: 'myworker', process: noop });
     w.on('start', function() {
       test.equal(typeof w, 'object', 'should return an object');
       test.equal(typeof w.pause, 'function', 'should expose `pause` function');
@@ -330,7 +334,7 @@ exports.listen = {
         test.ok(true, 'status has been stored');
         feed.stop();
         w.stop();
-        // test.done();
+        test.done();
       }
     });
     feed.follow();
