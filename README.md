@@ -40,9 +40,9 @@ See [follow](https://github.com/iriscouch/follow) for documentation.
 * `db` | [nano](https://github.com/dscape/nano) options
 * `follow` | [follow](https://github.com/iriscouch/follow) options
 * `status` | status options (optional)
-* `status.key` | Property to store status inside documents. Default is `worker_status`.
 * `status.db` | [nano](https://github.com/dscape/nano) options for status database connection. Default is to use the `db` connection.
-* `status.id` | id for status document. Only used if `statusDb` is given. Default is `worker-status/<id>`.
+* `status.id` | id for status document. Default is `worker-status/<id>`.
+* `status.prefix` | prefix for lock document ids. Default is `worker-lock/<id>/`.
 
 ## `process(doc, done)`
 This is where you do your work. It receives a `doc`, which is the current document,
@@ -50,28 +50,32 @@ as well as a `done` callback function, which must be invoked when the work is do
 
 You can now modify the `doc`. It will be saved by couchdb-worker.
 
-The `done` callback accepts itself two arguments: an `error` property,
-where you can inform couchdb-worker about any errors (it will also be stored inside the document)
-and a `next` callback function which is called when the modified document is saved.
+The `done` callback accepts itself one `error` argument,
+where you can inform couchdb-worker about any errors (it will also be stored inside the document).
+
+## Lock
+
+To prevent two same workers from processing the same document twice,
+couchdb-worker keeps a lock on the document.
+
+This is achieved by putting an empty doc inside the `status.db` while processing,
+which will be deleted when done.
+
+The id of that lock document is calculated by appending the documents id to `status.prefix`.
 
 ## Status
-* couchdb-worker stores its status inside the document in an object called `worker_status`.
-* Each worker manages its own status inside this object, eg `worker_status.myworker`.
-* The status can be `triggered`, `error` or `complete`.
-* Only one worker can run at a time on one document.
-* You can store your own worker status information (a retry count for example)
-inside the `worker_status` object.
-* If the processing failed, `worker_status.myworker.error` will contain the error.
-
-A status object can be
+couchdb-worker maintains a status document, where some stats are stored:
 
 ```javascript
 {
-  worker_status: {
-    myworker: {
-      status: 'complete'
-    }
-  }
+  "_id": "worker-status/my-worker",
+  "worker_id": "my-worker",
+  "seq": 123,
+  "last_doc_id": "mydoc",
+  "checked": 42,
+  "triggered": 42,
+  "completed": 40,
+  "failed": 2
 }
 ```
 
@@ -124,6 +128,7 @@ Dont think 1.0.0 means production ready yet.
 There were some breaking changes, so had to move up the major version.
 
 ## Release History
+* `2.0.0`: do not store worker status in documents, store lock in extra documents
 * `1.0.0`: complete rewrite and new (functional) API using [nano](https://github.com/dscape/nano)
 (and [follow](https://github.com/iriscouch/follow)) - _currently no attachment support_
 * `0.x`: object oriented version with attachment support - _The `0.x` line continues on the v0 branch_
