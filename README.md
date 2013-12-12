@@ -110,17 +110,20 @@ worker.listen({
 ```
 
 ## Testing
-To run the tests, run `grunt`.
+To run the tests, run `npm test`.
 
 The tests run agains a CouchDB server, and they create random databases of the form `couchdb-worker-test-<uuid>`.
 The default url is `http://localhost:5984`,
-which can be changed by setting the `COUCH_URL` environment variable,
-eg via `COUCH_URL=http://me:secure@me.iriscouch.com grunt`.
+which can be changed by setting the `COUCH_URL` environment variable, eg:
+
+```bash
+COUCH_URL=http://me:secure@me.iriscouch.com npm test
+```
 
 ## Contributing
 In lieu of a formal styleguide, take care to maintain the existing coding style.
 Add unit tests for any new or changed functionality.
-Lint and test your code using [Grunt](http://gruntjs.com/).
+Lint your code using `npm run jshint`.
 
 ## Versioning
 couchdb-worker follows [semver-ftw](http://semver-ftw.org/).

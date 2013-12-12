@@ -120,7 +120,7 @@ exports.pause = {
   'during process': function(test) {
     test.expect(1);
     var w;
-    function process(doc, next) {
+    function process() {
       test.ok(w.is_paused, 'feed should be paused');
       w.stop();
     }
@@ -157,7 +157,7 @@ exports.events = {
     }
     var w = worker.listen({ db: this.url, id: 'myworker', process: process });
     w.on('stop', test.done);
-    w.on('worker:error', function(err, doc) {
+    w.on('worker:error', function(err) {
       test.ok(true, 'worker:error event should have been fired');
       test.equal(err, error, 'error should be returned');
       w.stop();

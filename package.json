@@ -26,15 +26,18 @@
     "node": ">= 0.8.0"
   },
   "scripts": {
-    "test": "grunt nodeunit"
+    "test": "nodeunit test/*_test.js",
+    "jshint": "jshint -c .jshintrc lib/*.js test/*.js"
   },
   "devDependencies": {
-    "grunt-contrib-jshint": "~0.1.1",
-    "grunt-contrib-nodeunit": "~0.1.2",
-    "grunt-contrib-watch": "~0.2.0",
-    "grunt": "~0.4.0"
+    "nodeunit": "~0.8.2",
+    "jshint": "~2.3.0"
   },
-  "keywords": ["couchdb", "couchdb-worker", "worker"],
+  "keywords": [
+    "couchdb",
+    "couchdb-worker",
+    "worker"
+  ],
   "dependencies": {
     "nano": "~3.3.8"
   }
