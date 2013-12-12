@@ -5,29 +5,15 @@ Abstract CouchDB worker module
 ## Getting Started
 Install the module with: `npm install couchdb-worker`
 
-```javascript
-var worker = require('couchdb-worker');
-
-var myWorker = worker.listen({
+```js
+var worker = require('couchdb-worker').listen({
   id: 'my-worker',
   db: 'http://localhost:5984/mydb',
   process: function(doc, done) {
-    doc.computed_value = Math.random();
+    // do something with the doc
     done(null);
   }
 });
-
-myWorker.on('error', function(err) {
-  console.error('Since Follow always retries on errors, this must be serious');
-});
-myWorker.on('worker:complete', function(doc) {
-  console.log('worker completed: ', doc);
-});
-myWorker.on('worker:error', function(err, doc) {
-  console.log('worker error: ', err, doc);
-});
-
-myWorker.stop();
 ```
 
 ## Documentation
@@ -48,25 +34,22 @@ See [follow](https://github.com/iriscouch/follow) for documentation.
 This is where you do your work. It receives a `doc`, which is the current document,
 as well as a `done` callback function, which must be invoked when the work is done.
 
-You can now modify the `doc`. It will be saved by couchdb-worker.
-
-The `done` callback accepts itself one `error` argument,
-where you can inform couchdb-worker about any errors (it will also be stored inside the document).
+The `done` callback accepts itself an `error` argument,
+where you can inform couchdb-worker about any errors.
 
 ## Lock
-
 To prevent two same workers from processing the same document twice,
 couchdb-worker keeps a lock on the document.
 
-This is achieved by putting an empty doc inside the `status.db` while processing,
-which will be deleted when done.
+This is achieved by putting an empty doc inside the `status.db` while processing.
+It will be deleted when done.
 
 The id of that lock document is calculated by appending the documents id to `status.prefix`.
 
 ## Status
 couchdb-worker maintains a status document, where some stats are stored:
 
-```javascript
+```json
 {
   "_id": "worker-status/my-worker",
   "worker_id": "my-worker",
@@ -80,9 +63,8 @@ couchdb-worker maintains a status document, where some stats are stored:
 ```
 
 ## Examples
-```javascript
-var worker = require('couchdb-worker');
-worker.listen({
+```js
+var worker = require('couchdb-worker').listen({
   id: 'my-worker',
   db: {
     url: 'http://localhost:5984/mydb',
@@ -103,10 +85,28 @@ worker.listen({
     }
   }
   process: function(doc, done) {
-    doc.computed_value = Math.random();
+    // do something with the doc
     done(null);
   }
 });
+
+// listen to some events
+worker.on('error', function(err) {
+  console.error('Since Follow always retries on errors, this must be serious');
+});
+worker.on('worker:complete', function(doc) {
+  console.log('worker completed: ', doc);
+});
+worker.on('worker:error', function(err, doc) {
+  console.log('worker error: ', err, doc);
+});
+
+// you can pause the worker
+worker.pause();
+// and resume...
+worker.resume();
+// and finally stop it.
+worker.stop();
 ```
 
 ## Testing
