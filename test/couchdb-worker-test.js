@@ -97,9 +97,11 @@ exports['callback arguments'] = {
   },
   'process callback arguments': function(test) {
     var w;
-    function process(doc, next) {
+    function process(doc, db, next) {
       test.equal(typeof doc, 'object', 'doc should be an object');
       test.equal(doc._id, 'mydoc', 'doc _id should be `mydoc`');
+      test.equal(typeof db, 'object', 'db should be an object');
+      test.equal(typeof db.info, 'function', 'ducktyping: db should have info function');
       test.equal(typeof next, 'function', 'next should be a function');
       w.stop();
     }
@@ -132,7 +134,7 @@ exports.events = {
   tearDown: tearDown,
 
   'complete': function(test) {
-    function process(doc, next) {
+    function process(doc, db, next) {
       next(null);
     }
     var w = worker({ db: this.url, id: 'myworker', process: process });
@@ -148,7 +150,7 @@ exports.events = {
   },
   'error': function(test) {
     var error = 'this is an error';
-    function process(doc, next) {
+    function process(doc, db, next) {
       next(error);
     }
     var w = worker({ db: this.url, id: 'myworker', process: process });
@@ -169,7 +171,7 @@ exports.status = {
   tearDown: tearDown,
 
   'worker status': function(test) {
-    function process(doc, next) {
+    function process(doc, db, next) {
       next(null);
     }
     var w = worker({ db: this.url, id: 'myworker', process: process });

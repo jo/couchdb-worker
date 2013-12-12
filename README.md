@@ -9,9 +9,9 @@ Install the module with: `npm install couchdb-worker`
 var config = {
   id: 'my-worker',
   db: 'http://localhost:5984/mydb',
-  process: function(doc, done) {
-    // do something with the doc
-    done(null);
+  process: function(doc, db, done) {
+    doc.computed_value = Math.random();
+    db.insert(doc, done);
   }
 };
 
@@ -87,9 +87,9 @@ var worker = require('couchdb-worker')({
       app: '1234'
     }
   }
-  process: function(doc, done) {
-    // do something with the doc
-    done(null);
+  process: function(doc, db, done) {
+    doc.computed_value = Math.random();
+    db.insert(doc, done);
   }
 });
 
@@ -137,6 +137,7 @@ Dont think 1.0.0 means production ready yet.
 There were some breaking changes, so had to move up the major version.
 
 ## Release History
+* `3.1.0`: process function receives db object
 * `3.0.0`: return function (`worker.listen(config)` -> `worker(config).listen()`)
 * `2.0.0`: do not store worker status in documents, store lock in extra documents
 * `1.0.0`: complete rewrite and new (functional) API using [nano](https://github.com/dscape/nano)

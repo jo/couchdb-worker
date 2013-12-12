@@ -145,7 +145,7 @@ module.exports = function(options) {
       statusDiff.last_doc_id = change.id;
       statusDiff.triggered++;
 
-      options.process(doc, function(err) {
+      options.process(doc, db, function(err) {
         if (err) {
           statusDiff.failed++;
           feed.emit('worker:error', err, doc);
