@@ -8,7 +8,7 @@
 
 'use strict';
 
-exports.listen = function(options) {
+module.exports = function(options) {
   options = options || {};
   options.follow = options.follow || {};
   options.status = options.status || {};
@@ -168,16 +168,19 @@ exports.listen = function(options) {
 
   feed.on('change', onchange);
 
-  statusDb.get(statusDoc._id, function(err, doc) {
-    if (!err && doc) {
-      statusDoc = doc;
-    }
-    if (statusDoc.seq) {
-      feed.since = statusDoc.seq;
-    }
-    // start listening
-    feed.follow();
-  });
+  // support start function
+  feed.start = function() {
+    statusDb.get(statusDoc._id, function(err, doc) {
+      if (!err && doc) {
+        statusDoc = doc;
+      }
+      if (statusDoc.seq) {
+        feed.since = statusDoc.seq;
+      }
+      // start listening
+      feed.follow();
+    });
+  };
 
   // return feed object
   return feed;

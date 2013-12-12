@@ -6,14 +6,17 @@ Abstract CouchDB worker module
 Install the module with: `npm install couchdb-worker`
 
 ```js
-var worker = require('couchdb-worker').listen({
+var config = {
   id: 'my-worker',
   db: 'http://localhost:5984/mydb',
   process: function(doc, done) {
     // do something with the doc
     done(null);
   }
-});
+};
+
+require('couchdb-worker')(config)
+  .start();
 ```
 
 ## Documentation
@@ -64,7 +67,7 @@ couchdb-worker maintains a status document, where some stats are stored:
 
 ## Examples
 ```js
-var worker = require('couchdb-worker').listen({
+var worker = require('couchdb-worker')({
   id: 'my-worker',
   db: {
     url: 'http://localhost:5984/mydb',
@@ -101,6 +104,9 @@ worker.on('worker:error', function(err, doc) {
   console.log('worker error: ', err, doc);
 });
 
+// start work
+worker.start();
+
 // you can pause the worker
 worker.pause();
 // and resume...
@@ -131,6 +137,7 @@ Dont think 1.0.0 means production ready yet.
 There were some breaking changes, so had to move up the major version.
 
 ## Release History
+* `3.0.0`: return function (`worker.listen(config)` -> `worker(config).listen()`)
 * `2.0.0`: do not store worker status in documents, store lock in extra documents
 * `1.0.0`: complete rewrite and new (functional) API using [nano](https://github.com/dscape/nano)
 (and [follow](https://github.com/iriscouch/follow)) - _currently no attachment support_

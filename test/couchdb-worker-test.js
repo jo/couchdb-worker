@@ -3,7 +3,7 @@
 var server = process.env.COUCH_URL || 'http://localhost:5984';
 
 var url = require('url');
-var worker = require('../lib/couchdb-worker.js');
+var worker = require('..');
 var nano = require('nano')(server);
 
 /*
@@ -52,28 +52,24 @@ var tearDown = function(done) {
 
 exports.api = {
   'typeof': function(test) {
-    test.expect(1);
-    test.equal(typeof worker.listen, 'function', 'should be a function.');
+    test.equal(typeof worker, 'function', 'should be a function.');
     test.done();
   },
   'missing id': function(test) {
-    test.expect(1);
     test.throws(function() {
-      worker.listen();
+      worker();
     }, 'should throw error moaning missing id');
     test.done();
   },
   'missing process': function(test) {
-    test.expect(1);
     test.throws(function() {
-      worker.listen({ id: 'myworker' });
+      worker({ id: 'myworker' });
     }, 'should throw error moaning missing process function');
     test.done();
   },
   'missing url': function(test) {
-    test.expect(1);
     test.throws(function() {
-      worker.listen({ id: 'myworker', process: function() {} });
+      worker({ id: 'myworker', process: function() {} });
     }, 'should throw error moaning missing url');
     test.done();
   },
@@ -84,11 +80,11 @@ exports['callback arguments'] = {
   tearDown: tearDown,
 
   'feed object': function(test) {
-    test.expect(5);
-    var w = worker.listen({ db: this.url, id: 'myworker', process: function() {} });
+    var w = worker({ db: this.url, id: 'myworker', process: function() {} });
     w.on('stop', test.done);
     w.on('confirm', function() {
       test.equal(typeof w, 'object', 'should return an object');
+      test.equal(typeof w.start, 'function', 'should expose `start` function');
       test.equal(typeof w.pause, 'function', 'should expose `pause` function');
       test.equal(typeof w.resume, 'function', 'should expose `resume` function');
       test.equal(typeof w.stop, 'function', 'should expose `stop` function');
@@ -97,9 +93,9 @@ exports['callback arguments'] = {
         w.stop();
       }, 10);
     });
+    w.start();
   },
   'process callback arguments': function(test) {
-    test.expect(3);
     var w;
     function process(doc, next) {
       test.equal(typeof doc, 'object', 'doc should be an object');
@@ -107,9 +103,10 @@ exports['callback arguments'] = {
       test.equal(typeof next, 'function', 'next should be a function');
       w.stop();
     }
-    w = worker.listen({ db: this.url, id: 'myworker', process: process });
+    w = worker({ db: this.url, id: 'myworker', process: process });
     w.on('stop', test.done);
     this.db.insert({}, 'mydoc');
+    w.start();
   }
 };
 
@@ -118,15 +115,15 @@ exports.pause = {
   tearDown: tearDown,
 
   'during process': function(test) {
-    test.expect(1);
     var w;
     function process() {
       test.ok(w.is_paused, 'feed should be paused');
       w.stop();
     }
-    w = worker.listen({ db: this.url, id: 'myworker', process: process });
+    w = worker({ db: this.url, id: 'myworker', process: process });
     w.on('stop', test.done);
     this.db.insert({});
+    w.start();
   }
 };
 
@@ -135,11 +132,10 @@ exports.events = {
   tearDown: tearDown,
 
   'complete': function(test) {
-    test.expect(3);
     function process(doc, next) {
       next(null);
     }
-    var w = worker.listen({ db: this.url, id: 'myworker', process: process });
+    var w = worker({ db: this.url, id: 'myworker', process: process });
     w.on('stop', test.done);
     w.on('worker:complete', function(err, doc) {
       test.ok(true, 'worker:complete event should have been fired');
@@ -148,14 +144,14 @@ exports.events = {
       w.stop();
     });
     this.db.insert({}, 'mydoc');
+    w.start();
   },
   'error': function(test) {
-    test.expect(2);
     var error = 'this is an error';
     function process(doc, next) {
       next(error);
     }
-    var w = worker.listen({ db: this.url, id: 'myworker', process: process });
+    var w = worker({ db: this.url, id: 'myworker', process: process });
     w.on('stop', test.done);
     w.on('worker:error', function(err) {
       test.ok(true, 'worker:error event should have been fired');
@@ -163,6 +159,7 @@ exports.events = {
       w.stop();
     });
     this.db.insert({});
+    w.start();
   }
   // TODO: test skip event
 };
@@ -172,11 +169,10 @@ exports.status = {
   tearDown: tearDown,
 
   'worker status': function(test) {
-    test.expect(8);
     function process(doc, next) {
       next(null);
     }
-    var w = worker.listen({ db: this.url, id: 'myworker', process: process });
+    var w = worker({ db: this.url, id: 'myworker', process: process });
     var feed = this.db.follow({ include_docs: true });
     feed.on('change', function(change) {
       if (change.id === 'worker-status/myworker') {
@@ -195,5 +191,6 @@ exports.status = {
     });
     feed.follow();
     this.db.insert({}, 'mydoc');
+    w.start();
   },
 };

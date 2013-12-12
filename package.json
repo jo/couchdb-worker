@@ -1,7 +1,7 @@
 {
   "name": "couchdb-worker",
   "description": "CouchDB worker module that manages state",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "homepage": "https://github.com/jo/couchdb-worker",
   "author": {
     "name": "Johannes J. Schmidt",
@@ -21,12 +21,12 @@
       "url": "https://github.com/jo/couchdb-worker/blob/master/LICENSE-MIT"
     }
   ],
-  "main": "lib/couchdb-worker",
+  "main": "index.js",
   "engines": {
     "node": ">= 0.8.0"
   },
   "scripts": {
-    "test": "nodeunit test/*_test.js",
+    "test": "nodeunit test/*-test.js",
     "jshint": "jshint -c .jshintrc lib/*.js test/*.js"
   },
   "devDependencies": {
@@ -39,6 +39,6 @@
     "worker"
   ],
   "dependencies": {
-    "nano": "~3.3.8"
+    "nano": "~4.2.1"
   }
 }
