@@ -73,12 +73,29 @@ exports.api = {
     }, 'should throw error moaning missing url');
     test.done();
   },
+  'missing url options': function(test) {
+    test.throws(function() {
+      worker({ id: 'myworker', db: {}, process: function() {} });
+    }, 'should throw error moaning missing url options');
+    test.done();
+  },
 };
 
 exports['callback arguments'] = {
   setUp: setUp,
   tearDown: tearDown,
 
+  'url can be an object': function(test) {
+    var w = worker({ db: { url: this.url }, id: 'myworker', process: function() {} });
+    w.on('stop', test.done);
+    w.on('confirm', function() {
+      test.ok(true, 'url can be passed in as an object');
+      setTimeout(function() {
+        w.stop();
+      }, 10);
+    });
+    w.start();
+  },
   'feed object': function(test) {
     var w = worker({ db: this.url, id: 'myworker', process: function() {} });
     w.on('stop', test.done);

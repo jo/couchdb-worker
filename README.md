@@ -137,6 +137,7 @@ Dont think 1.0.0 means production ready yet.
 There were some breaking changes, so had to move up the major version.
 
 ## Release History
+* `3.1.1`: fix issue with db objects
 * `3.1.0`: process function receives db object
 * `3.0.0`: return function (`worker.listen(config)` -> `worker(config).listen()`)
 * `2.0.0`: do not store worker status in documents, store lock in extra documents

@@ -19,6 +19,12 @@ module.exports = function(options) {
   options.status.id = options.status.id || 'worker-status/' + options.id;
   options.status.prefix = options.status.prefix || 'worker-lock/' + options.id + '/';
 
+  // nano modifies the options object, so this is needed.
+  if (typeof options.status.db === 'object') {
+    options.status.db = require('util')._extend({}, options.db);
+  }
+
+
   // mandatory options
   if (typeof options.id !== 'string') {
     throw('worker needs an id.');
