@@ -159,7 +159,7 @@ module.exports = function(options) {
 
         release(lock, function() {
           if (!err) {
-            feed.emit('worker:complete', err, doc);
+            feed.emit('worker:complete', doc);
             statusDiff.completed++;
           }
 
