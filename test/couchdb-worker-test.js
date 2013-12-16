@@ -156,7 +156,7 @@ exports.events = {
     }
     var w = worker({ db: this.url, id: 'myworker', process: process });
     w.on('stop', test.done);
-    w.on('worker:complete', function(err, doc) {
+    w.on('worker:complete', function(doc) {
       test.ok(true, 'worker:complete event should have been fired');
       test.equal(typeof doc, 'object', 'doc should be an object');
       test.equal(doc._id, 'mydoc', 'doc _id should be `mydoc`');
@@ -191,7 +191,7 @@ exports.status = {
     function process(doc, db, next) {
       next(null);
     }
-    var w = worker({ db: this.url, id: 'myworker', process: process });
+    var w = worker({ db: this.url, status: true, id: 'myworker', process: process });
     var feed = this.db.follow({ include_docs: true });
     feed.on('change', function(change) {
       if (change.id === 'worker-status/myworker') {

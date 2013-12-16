@@ -11,17 +11,35 @@
 module.exports = function(options) {
   options = options || {};
   options.follow = options.follow || {};
-  options.status = options.status || {};
+  options.status = options.status || false;
+  options.lock = options.lock || false;
 
   // defaults
   options.follow.include_docs = true;
-  options.status.db = options.status.db || options.db;
-  options.status.id = options.status.id || 'worker-status/' + options.id;
-  options.status.prefix = options.status.prefix || 'worker-lock/' + options.id + '/';
+
+  if (options.status === true) {
+    options.status = {};
+  }
+  if (typeof options.status === 'object') {
+    options.status.db = options.status.db || options.db;
+    options.status.id = options.status.id || 'worker-status/' + options.id;
+    options.status.prefix = options.status.prefix || 'worker-lock/' + options.id + '/';
+  }
+
+  if (options.lock === true) {
+    options.lock = {};
+  }
+  if (typeof options.lock === 'object') {
+    options.lock.db = options.lock.db || options.status.db;
+    options.lock.prefix = options.lock.prefix || 'worker-lock/' + options.id + '/';
+  }
 
   // nano modifies the options object, so this is needed.
-  if (typeof options.status.db === 'object') {
+  if (options.status && typeof options.status.db === 'object') {
     options.status.db = require('util')._extend({}, options.db);
+  }
+  if (options.lock && typeof options.lock.db === 'object') {
+    options.lock.db = require('util')._extend({}, options.db);
   }
 
 
@@ -35,24 +53,35 @@ module.exports = function(options) {
   // database connector
   var db = require('nano')(options.db);
   // status database connector
-  var statusDb = require('nano')(options.status.db);
+  var statusDb = options.status && require('nano')(options.status.db);
+  // lock database connector
+  var lockDb = options.lock && require('nano')(options.lock.db);
   // changes feed
   var feed = db.follow(options.follow);
 
+
   // capture a document
   function capture(doc, done) {
-    statusDb.insert({}, options.status.prefix + doc._id, done);
+    if (!lockDb) {
+      return done(null);
+    }
+
+    lockDb.insert({}, options.lock.prefix + doc._id, done);
   }
 
   // release a document
   function release(lock, done) {
-    statusDb.destroy(lock.id, lock.rev, function(err) {
+    if (!lockDb) {
+      return done(null);
+    }
+
+    lockDb.destroy(lock.id, lock.rev, function(err) {
       if (!err) {
         return done();
       }
       // force delete in case of conflict
       if (err.error === 'conflict') {
-        statusDb.get(lock._id, function(err, doc) {
+        lockDb.get(lock._id, function(err, doc) {
           if (err) {
             return feed.emit('worker:release-error', err, lock);
           }
@@ -71,7 +100,7 @@ module.exports = function(options) {
     }
 
     // discard lock
-    var match = doc._id.match(options.status.prefix);
+    var match = options.lock && doc._id.match(options.lock.prefix);
     if (match && match.index === 0) {
       return true;
     }
@@ -88,6 +117,10 @@ module.exports = function(options) {
     failed: 0
   };
   function storeStatus() {
+    if (!statusDb) {
+      return;
+    }
+    
     if (feed.dead) {
       return;
     }
@@ -176,6 +209,10 @@ module.exports = function(options) {
 
   // support start function
   feed.start = function() {
+    if (!statusDb) {
+      return feed.follow();
+    }
+
     statusDb.get(statusDoc._id, function(err, doc) {
       if (!err && doc) {
         statusDoc = doc;

@@ -28,10 +28,12 @@ See [follow](https://github.com/iriscouch/follow) for documentation.
 * `process` | Processor function. Receives `doc` and `done` arguments.
 * `db` | [nano](https://github.com/dscape/nano) options
 * `follow` | [follow](https://github.com/iriscouch/follow) options
-* `status` | status options (optional)
+* `status` | status options (optional). Default is `false`.
 * `status.db` | [nano](https://github.com/dscape/nano) options for status database connection. Default is to use the `db` connection.
 * `status.id` | id for status document. Default is `worker-status/<id>`.
-* `status.prefix` | prefix for lock document ids. Default is `worker-lock/<id>/`.
+* `lock` | lock options (optional). Default is `false`.
+* `lock.db` | [nano](https://github.com/dscape/nano) options for lock database connection. Default is to use the `status.db` connection.
+* `lock.prefix` | prefix for lock document ids. Default is `worker-lock/<id>/`.
 
 ## `process(doc, done)`
 This is where you do your work. It receives a `doc`, which is the current document,
@@ -40,17 +42,8 @@ as well as a `done` callback function, which must be invoked when the work is do
 The `done` callback accepts itself an `error` argument,
 where you can inform couchdb-worker about any errors.
 
-## Lock
-To prevent two same workers from processing the same document twice,
-couchdb-worker keeps a lock on the document.
-
-This is achieved by putting an empty doc inside the `status.db` while processing.
-It will be deleted when done.
-
-The id of that lock document is calculated by appending the documents id to `status.prefix`.
-
 ## Status
-couchdb-worker maintains a status document, where some stats are stored:
+couchdb-worker can maintain a status document, where some stats are stored:
 
 ```json
 {
@@ -65,6 +58,19 @@ couchdb-worker maintains a status document, where some stats are stored:
 }
 ```
 
+Its disabled by default as of `3.2.0`. To enable, set `status: true`.
+
+## Lock
+To prevent two same workers from processing the same document twice,
+couchdb-worker can keep a lock on the document.
+
+This is achieved by putting an empty doc inside the `lock.db` while processing.
+It will be deleted when done.
+
+The id of that lock document is calculated by appending the documents id to `lock.prefix`.
+
+Its disabled by default as of `3.2.0`. To enable locking, set `lock: true`.
+
 ## Examples
 ```js
 var worker = require('couchdb-worker')({
@@ -75,6 +81,17 @@ var worker = require('couchdb-worker')({
       auth: {
         user: 'me',
         pass: 'secret'
+      }
+    }
+  },
+  status: {
+    db: {
+      url: 'http://localhost:5984/worker-stats',
+      request_defaults: {
+        auth: {
+          user: 'me',
+          pass: 'secret'
+        }
       }
     }
   },
@@ -137,6 +154,7 @@ Dont think 1.0.0 means production ready yet.
 There were some breaking changes, so had to move up the major version.
 
 ## Release History
+* `3.2.0`: configurable status and lock behaviour
 * `3.1.1`: fix issue with db objects
 * `3.1.0`: process function receives db object
 * `3.0.0`: return function (`worker.listen(config)` -> `worker(config).listen()`)
