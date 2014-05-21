@@ -2,6 +2,9 @@
 
 Abstract CouchDB worker module
 
+# Deprication Note
+This is depricated in favour of [couch-daemon](https://github.com/jo/couch-daemon)
+
 ## Getting Started
 Install the module with: `npm install couchdb-worker`
 
